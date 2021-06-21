@@ -1,0 +1,13 @@
+name: Aquamarine
+description: A ticket plugin for Xeno
+author: Xeno
+website: https://xeno.fi/
+commands:
+  xnpc:
+    description: Ukkeleiden toiminnallisia höpötyksiä
+permissions:
+  xfig.admin:
+    description: Oikeudet luoda, poistaa, jne.
+version: 2.0
+main: fi.xeno.aquamarine.XTicketsPlugin
+load: STARTUP
