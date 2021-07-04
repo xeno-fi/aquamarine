@@ -1,0 +1,22 @@
+# Language file for XAquamarine
+generic-no-permission: "Sinulla ei ole oikeutta tuohon."
+command-ticket-usage: "Käytä: &b/%label% [viesti]"
+
+ticket-deny-nearby: "Et voi luoda uutta apupyyntöä tässä, koska lähellä on tehty jo muita apupyyntöjä."
+ticket-deny-player: "Et voi luoda uutta apupyyntöä, koska sinulla on jo useita odottavia apupyyntöjä."
+
+ticket-created: "Avasit uuden apupyynnön. Numero: &b%ticketId%"
+ticket-created-announcement: "&b%player% &7avasi apupyynnön &b#%ticketId%&7:"
+ticket-join-announcement: "Palvelimella odottaa &b%ticketCount% apupyyntöä"
+
+ticket-preview-teleport: "Teleporttaa"
+ticket-preview-solve: "Muuta ratkaistuksi"
+
+ticket-hover-title: "&bApupyyntö #%ticketId%"
+ticket-hover-sender: "&7Lähettäjä: &f%s"
+ticket-hover-timestamp: "&7Aikaleima: &f%s"
+ticket-hover-location: "&7Sijainti: &f%s"
+
+ticket-hover-solver: "&7Selvittäjä: &f%s"
+ticket-hover-solved-at: "&7Selvitetty: &f%s"
+ticket-hover-comment: "&7Kommentti:"

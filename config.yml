@@ -1,0 +1,39 @@
+# Aquamarine configuration v0.1.0
+
+# Storage method;
+#   'mysql'   for MySQL
+#   'file'    for flat-file storage
+#   'memory'  for non-persistent memory storage
+storage-method: "file"
+
+# Database configuration (if storage-method set to 'mysql')
+mysql-host: localhost
+mysql-port: 3306
+mysql-user: user
+mysql-pass: pass
+mysql-db: database
+mysql-table: aquamarine_tickets
+
+# Max open tickets per radius
+enable-max-per-radius: true
+check-radius: 5.0
+max-per-radius: 3
+
+# Max open tickets per player
+enable-max-per-player: true
+max-per-player: 3
+
+# Formatting
+message-prefix: "&8[&bAquamarine&8] &7"
+date-format: "dd.MM.yyyy kk:mm:ss"   # (SimpleDateFormat)
+
+# Join announcement for users with permissions
+enable-join-announce: true
+join-announce-delay-seconds: 5
+
+# Discord webhook settings
+enable-webhook: false
+webhook-url: https://example.com/
+
+# Do not change
+config-version: 1.0

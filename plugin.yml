@@ -3,11 +3,24 @@ description: A ticket plugin for Xeno
 author: Xeno
 website: https://xeno.fi/
 commands:
-  xnpc:
-    description: Ukkeleiden toiminnallisia höpötyksiä
+  ticket:
+    description: Open a new ticket
+    aliases: [apupyyntö, avunpyyntö, tiketti, helpop]
+    permission: aquamarine.ticket
+  tickets:
+    description: Show a list of your recent tickets
+    aliases: [apupyynnöt, avunpyynnöt, tiketit]
+    permission: aquamarine.ticket
+  xt:
+    description: Staff features
+    permission: aquamarine.staff
+  xti:
+    description: Staff features
+    permission: aquamarine.staff
 permissions:
-  xfig.admin:
-    description: Oikeudet luoda, poistaa, jne.
-version: 2.0
+  aquamarine.ticket:
+    description: Permission to open new tickets
+  aquamarine.staff:
+    description: Permission to teleport to tickets and solve them
+version: 0.1.0
 main: fi.xeno.aquamarine.XTicketsPlugin
-load: STARTUP
