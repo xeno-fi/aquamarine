@@ -1,6 +1,7 @@
 package fi.xeno.aquamarine;
 
 import fi.xeno.aquamarine.command.CommandTicket;
+import fi.xeno.aquamarine.command.CommandTickets;
 import fi.xeno.aquamarine.command.CommandXt;
 import fi.xeno.aquamarine.command.CommandXti;
 import fi.xeno.aquamarine.sql.XHikariDatabase;
@@ -96,6 +97,7 @@ public class XTicketsPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(ticketManager, this);
         
         registerCommand("ticket", new CommandTicket(this, ticketManager));
+        registerCommand("tickets", new CommandTickets(this, ticketManager));
         registerCommand("xt", new CommandXt(this, ticketManager));
         
         CommandXti ticketGuiCommand = new CommandXti(this, ticketManager);

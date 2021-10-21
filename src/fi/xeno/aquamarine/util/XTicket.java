@@ -158,9 +158,9 @@ public class XTicket {
         String solvedString = "";
         if (this.isSolved) {
             
-            solvedString = String.format(plugin.lang("ticket-hover-solver"), this.solvedByName) + "\n" +
+            solvedString = "\n" + String.format(plugin.lang("ticket-hover-solver"), this.solvedByName) + "\n" +
                             String.format(plugin.lang("ticket-hover-solved-at"), plugin.formatTimestamp(this.timeSolved)) + "\n" +
-                            plugin.lang("ticket-hover-comment") + "§f§o" + XText.wordWrap(this.solveComment, 40);
+                            plugin.lang("ticket-hover-comment") + " §f§o" + XText.wordWrap(this.solveComment, 40);
             
         }
         
