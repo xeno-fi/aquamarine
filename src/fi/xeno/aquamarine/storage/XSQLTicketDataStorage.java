@@ -25,6 +25,7 @@ public class XSQLTicketDataStorage extends XTicketDataStorage {
         
         this.plugin = plugin;
         this.db = db;
+        this.tableName = tableName;
         
         if (tableName.matches("[^A-Za-z0-9\\_\\-]")) {
             throw new RuntimeException("Table name '" + tableName + "' contains illegal characters.");
@@ -163,7 +164,8 @@ public class XSQLTicketDataStorage extends XTicketDataStorage {
 
     @Override
     public Optional<XTicket> getTicketByNumber(int id) {
-        return Optional.empty();
+        List<XTicket> tickets = queryTickets("SELECT * FROM " + tableName + " WHERE ticketId = ?", o(id));
+        return tickets.size() > 0 ? Optional.of(tickets.get(0)) : Optional.empty();
     }
 
     @Override
