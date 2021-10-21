@@ -61,13 +61,14 @@ public class XTicketManager implements Listener {
             throw new RuntimeException("Unable to create new ticket. Check your storage method.");
 
         String staffAnnounce = plugin.lang("ticket-created-announcement")
-                .replace("player", player.getName())
-                .replace("ticketId", ""+ticket.getId());
+                .replaceAll("\\$player\\$", player.getName())
+                .replaceAll("\\$ticketId\\$", ""+ticket.getId());
         
         Bukkit.getOnlinePlayers()
                 .stream()
                 .filter(p -> p.hasPermission(AquamarinePermission.STAFF))
-                .forEach(p -> plugin.sendPrefixed(staffAnnounce, p));
+                .peek(p -> plugin.sendPrefixed(staffAnnounce, p))
+                .forEach(p -> p.sendMessage("§f§o" + ticket.getMessage()));
         
         return ticket;
         
@@ -83,10 +84,10 @@ public class XTicketManager implements Listener {
             
             Player player = e.getPlayer();
             
-            if (player.hasPermission(AquamarinePermission.STAFF)) {
+            if (player.hasPermission(AquamarinePermission.STAFF) || player.isOp()) {
                 storage.getWaitingTicketsAsync((List<XTicket> tickets) -> {
                     if (tickets.size() > 0) {
-                        plugin.sendPrefixed(plugin.lang("ticket-join-announcement").replace("%ticketCount%", ""+tickets.size()));
+                        plugin.sendPrefixed(plugin.lang("ticket-join-announcement").replaceAll("\\$ticketCount\\$", ""+tickets.size()), player);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.5f);
                     }
                 });

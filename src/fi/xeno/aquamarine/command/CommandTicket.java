@@ -37,7 +37,7 @@ public class CommandTicket implements TabExecutor {
         }
         
         if (args.length == 0) {
-            sender.sendMessage(plugin.lang("command-ticket-usage").replace("%label%", label));
+            sender.sendMessage(plugin.lang("command-ticket-usage").replaceAll("\\$label\\$", label));
             return true;
         }
 
@@ -62,7 +62,7 @@ public class CommandTicket implements TabExecutor {
             
             XTicket ticket = ticketManager.createTicket(player, msgJoiner.toString().trim());
             
-            plugin.sendPrefixed(plugin.lang("ticket-created").replace("%ticketId%", ""+ticket.getId()));
+            plugin.sendPrefixed(plugin.lang("ticket-created").replaceAll("\\$ticketId\\$", ""+ticket.getId()));
             
         });
 

@@ -90,7 +90,7 @@ public class XText {
         
         for (String s:words) {
             
-            out.append(s);
+            out.append(s).append(' ');
             line += s.length();
             
             if (line >= charsPerLine) {

@@ -1,18 +1,37 @@
 # Language file for XAquamarine
 generic-no-permission: "Sinulla ei ole oikeutta tuohon."
-command-ticket-usage: "Käytä: &b/%label% [viesti]"
+generic-not-player: "Tämä komento toimii vain pelaajilla."
+generic-invalid-number: "Virheellinen numero: &b$n$"
+generic-ticket-not-found: "Apupyyntöä ei löytynyt."
+generic-invalid-ticket: "Apupyyntö on virheellinen tai sitä koskevaa maailmaa ei ole ladattu."
+generic-invalid-player: "Pelaajaa '$player$' ei löytynyt. Oletko varma, että hän on pelannut täällä tuolla nimellä?"
+generic-no-tickets: "Apupyyntöjä ei löytynyt."
+generic-previous: "Edelliset"
+generic-next: "Seuraavat"
+generic-page: "Sivu "
+
+gui-click-teleport: "Klikkaa vasemmalla siirtyäksesi"
+gui-click-solve: "Klikkaa oikealla sulkeaksesi"
+
+command-ticket-usage: "Käytä: &b/$label$ [viesti]"
+command-ticket-goto-usage: "Käytä: &b/$label$ goto [id]"
+command-ticket-goto-teleport: "Woosh! Täällä ollaan."
+command-ticket-solve-usage: "Käytä: &b/$label$ solve [id] [viesti]"
+command-ticket-solved: "&b$solver$ &7sulki apupyynnön &b#$n$&7: &f&o$comment$"
+command-ticket-view-usage: "Käytä: &b/$label$ view [id]"
+command-ticket-player-usage: "Käytä: &b/$label$ player [pelaaja] [sivu]"
 
 ticket-deny-nearby: "Et voi luoda uutta apupyyntöä tässä, koska lähellä on tehty jo muita apupyyntöjä."
 ticket-deny-player: "Et voi luoda uutta apupyyntöä, koska sinulla on jo useita odottavia apupyyntöjä."
 
-ticket-created: "Avasit uuden apupyynnön. Numero: &b%ticketId%"
-ticket-created-announcement: "&b%player% &7avasi apupyynnön &b#%ticketId%&7:"
-ticket-join-announcement: "Palvelimella odottaa &b%ticketCount% apupyyntöä"
+ticket-created: "Avasit uuden apupyynnön. Numero: &b$ticketId$"
+ticket-created-announcement: "&b$player$ &7avasi apupyynnön &b#$ticketId$&7:"
+ticket-join-announcement: "Palvelimella odottaa &b$ticketCount$ apupyyntöä"
 
 ticket-preview-teleport: "Teleporttaa"
 ticket-preview-solve: "Muuta ratkaistuksi"
 
-ticket-hover-title: "&bApupyyntö #%ticketId%"
+ticket-hover-title: "&bApupyyntö #$ticketId$"
 ticket-hover-sender: "&7Lähettäjä: &f%s"
 ticket-hover-timestamp: "&7Aikaleima: &f%s"
 ticket-hover-location: "&7Sijainti: &f%s"

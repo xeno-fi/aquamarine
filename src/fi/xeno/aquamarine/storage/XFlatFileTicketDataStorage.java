@@ -6,6 +6,7 @@ import fi.xeno.aquamarine.XTicketsPlugin;
 import fi.xeno.aquamarine.util.XStoredLocation;
 import fi.xeno.aquamarine.util.XTicket;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -38,7 +39,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
 
     }
     
-    private void load() throws IOException {
+    private synchronized void load() throws IOException {
         
         tickets.clear();
         
@@ -71,7 +72,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
         
     }
     
-    private void save() {
+    private synchronized void save() {
         
         JsonArray out = new JsonArray();
         tickets.values()
@@ -82,6 +83,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
         try {
             Writer writer = new FileWriter(file);
             gson.toJson(out, writer);
+            writer.close();
         } catch (IOException e) {
             plugin.getLogger().severe("Unable to save ticket JSON data:");
             e.printStackTrace();
@@ -95,7 +97,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
 
 
     @Override
-    public XTicket createTicket(Player player, String message) {
+    public synchronized XTicket createTicket(Player player, String message) {
         
         XTicket ticket = XTicket.asPlayer(getNextTicketId(), player, message);
         tickets.put(ticket.getId(), ticket);
@@ -107,11 +109,11 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public void solveTicket(XTicket ticket, Player solver, String comment) {
+    public synchronized void solveTicket(XTicket ticket, CommandSender solver, String comment) {
         
         ticket.setSolved(true);
         
-        ticket.setSolvedByUuid(solver.getUniqueId());
+        ticket.setSolvedByUuid(solver instanceof Player ? ((Player)solver).getUniqueId() : new UUID(0,0));
         ticket.setSolvedByName(solver.getName());
         
         ticket.setSolveComment(comment);
@@ -120,17 +122,18 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
         // this SHOULD be unnecessary, but just to be sure...
         tickets.put(ticket.getId(), ticket);
         
+        announceSolveTicket(ticket, solver, comment);
         saveAsync();
         
     }
 
     @Override
-    public Optional<XTicket> getTicketByNumber(int id) {
+    public synchronized Optional<XTicket> getTicketByNumber(int id) {
         return Optional.ofNullable(tickets.getOrDefault(id, null));
     }
 
     @Override
-    public List<XTicket> getTickets() {
+    public synchronized List<XTicket> getTickets() {
         return tickets.values()
                 .stream()
                 .sorted(Comparator.comparingInt(XTicket::getId))
@@ -138,7 +141,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public List<XTicket> getWaitingTickets() {
+    public synchronized List<XTicket> getWaitingTickets() {
         return tickets.values()
                 .stream()
                 .filter(t -> !t.isSolved())
@@ -147,7 +150,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public List<XTicket> getSolvedTickets() {
+    public synchronized List<XTicket> getSolvedTickets() {
         return tickets.values()
                 .stream()
                 .filter(XTicket::isSolved)
@@ -156,7 +159,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public List<XTicket> getWaitingNearbyTickets(XStoredLocation location, double radius) {
+    public synchronized List<XTicket> getWaitingNearbyTickets(XStoredLocation location, double radius) {
         return tickets.values()
                 .stream()
                 .filter(t -> !t.isSolved() && t.getLocation().isInRadius(location, radius))
@@ -165,7 +168,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public List<XTicket> getWaitingTicketsBySender(UUID uuid) {
+    public synchronized List<XTicket> getWaitingTicketsBySender(UUID uuid) {
         return tickets.values()
                 .stream()
                 .filter(t -> !t.isSolved() && t.getSentByUuid().equals(uuid))
@@ -174,7 +177,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public List<XTicket> getTicketsBySender(UUID uuid) {
+    public synchronized List<XTicket> getTicketsBySender(UUID uuid) {
         return tickets.values()
                 .stream()
                 .filter(t -> t.getSentByUuid().equals(uuid))
@@ -183,7 +186,7 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public List<XTicket> getTicketsBySolver(UUID uuid) {
+    public synchronized List<XTicket> getTicketsBySolver(UUID uuid) {
         return tickets.values()
                 .stream()
                 .filter(t -> t.isSolved() && t.getSolvedByUuid().equals(uuid))
@@ -192,12 +195,12 @@ public class XFlatFileTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public int getNextTicketId() {
+    public synchronized int getNextTicketId() {
         return tickets.keySet().stream().max(Comparator.comparingInt(Integer::intValue)).orElse(0) + 1;
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         plugin.getLogger().info("Saving ticket storage...");
         save();
     }

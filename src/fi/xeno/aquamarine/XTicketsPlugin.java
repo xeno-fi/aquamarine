@@ -1,6 +1,8 @@
 package fi.xeno.aquamarine;
 
 import fi.xeno.aquamarine.command.CommandTicket;
+import fi.xeno.aquamarine.command.CommandXt;
+import fi.xeno.aquamarine.command.CommandXti;
 import fi.xeno.aquamarine.sql.XHikariDatabase;
 import fi.xeno.aquamarine.storage.XFlatFileTicketDataStorage;
 import fi.xeno.aquamarine.storage.XMemoryTicketDataStorage;
@@ -8,6 +10,8 @@ import fi.xeno.aquamarine.storage.XSQLTicketDataStorage;
 import fi.xeno.aquamarine.storage.XTicketDataStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -19,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class XTicketsPlugin extends JavaPlugin {
@@ -87,8 +93,14 @@ public class XTicketsPlugin extends JavaPlugin {
         }
         
         ticketManager = new XTicketManager(this, dataStorage);
+        Bukkit.getPluginManager().registerEvents(ticketManager, this);
         
         registerCommand("ticket", new CommandTicket(this, ticketManager));
+        registerCommand("xt", new CommandXt(this, ticketManager));
+        
+        CommandXti ticketGuiCommand = new CommandXti(this, ticketManager);
+        Bukkit.getPluginManager().registerEvents(ticketGuiCommand, this);
+        registerCommand("xti", ticketGuiCommand);
         
         logger.info("Aquamarine has been enabled!");
         
@@ -106,21 +118,31 @@ public class XTicketsPlugin extends JavaPlugin {
         this.getCommand(label).setTabCompleter(command);
     }
     
-    public void sendPrefixed(String message, Player... recipients) {
+    public void sendPrefixed(String message, CommandSender... recipients) {
         sendPrefixed(message, Arrays.asList(recipients));
     }
     
-    public void sendPrefixed(String message, Iterable<Player> recipients) {
+    public void sendPrefixed(String message, Iterable<CommandSender> recipients) {
         String out = INFO_PREFIX + message;
         recipients.forEach(p -> p.sendMessage(out));
     }
     
     public String lang(String key){
-        return lang.getString(key, "lang["+key+"]");
+        return ChatColor.translateAlternateColorCodes('&', lang.getString(key, "lang["+key+"]"));
     }
     
     public String formatTimestamp(long timestamp) {
         return dateFormat.format(Date.from(Instant.ofEpochMilli(timestamp)));
+    }
+    
+    private static Map<String, NamespacedKey> keyCache = new ConcurrentHashMap<>();
+    public static NamespacedKey key(String n) {
+        if (!keyCache.containsKey(n)) keyCache.put(n, new NamespacedKey(getInstance(), n));
+        return keyCache.get(n);
+    }
+
+    public XTicketManager getTicketManager() {
+        return ticketManager;
     }
     
 }

@@ -6,6 +6,7 @@ import fi.xeno.aquamarine.XTicketsPlugin;
 import fi.xeno.aquamarine.util.XStoredLocation;
 import fi.xeno.aquamarine.util.XTicket;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -33,11 +34,11 @@ public class XMemoryTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public void solveTicket(XTicket ticket, Player solver, String comment) {
+    public void solveTicket(XTicket ticket, CommandSender solver, String comment) {
         
         ticket.setSolved(true);
-        
-        ticket.setSolvedByUuid(solver.getUniqueId());
+
+        ticket.setSolvedByUuid(solver instanceof Player ? ((Player)solver).getUniqueId() : new UUID(0,0));
         ticket.setSolvedByName(solver.getName());
         
         ticket.setSolveComment(comment);
@@ -45,6 +46,8 @@ public class XMemoryTicketDataStorage extends XTicketDataStorage {
         
         // this SHOULD be unnecessary, but just to be sure...
         tickets.put(ticket.getId(), ticket);
+        
+        announceSolveTicket(ticket, solver, comment);
         
     }
 

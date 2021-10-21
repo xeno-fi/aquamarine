@@ -13,9 +13,11 @@ commands:
     permission: aquamarine.ticket
   xt:
     description: Staff features
+    aliases: [aq]
     permission: aquamarine.staff
   xti:
     description: Staff features
+    aliases: [aqi]
     permission: aquamarine.staff
 permissions:
   aquamarine.ticket:

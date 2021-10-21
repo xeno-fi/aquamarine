@@ -1,9 +1,11 @@
 package fi.xeno.aquamarine.storage;
 
+import fi.xeno.aquamarine.AquamarinePermission;
 import fi.xeno.aquamarine.XTicketsPlugin;
 import fi.xeno.aquamarine.util.XStoredLocation;
 import fi.xeno.aquamarine.util.XTicket;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.function.Consumer;
 public abstract class XTicketDataStorage {
 
     public abstract XTicket createTicket(Player player, String message);
-    public abstract void solveTicket(XTicket ticket, Player solver, String comment);
+    public abstract void solveTicket(XTicket ticket, CommandSender solver, String comment);
     
     public abstract Optional<XTicket> getTicketByNumber(int id);
     
@@ -42,7 +44,7 @@ public abstract class XTicketDataStorage {
         });
     }
     
-    public Optional<XTicket> solveTicket(int ticketId, Player solver, String comment) {
+    public Optional<XTicket> solveTicket(int ticketId, CommandSender solver, String comment) {
         
         XTicket ticket = getTicketByNumber(ticketId).orElse(null);
         
@@ -52,6 +54,21 @@ public abstract class XTicketDataStorage {
         solveTicket(ticket, solver, comment);
         
         return Optional.of(ticket);
+        
+    }
+    
+    public void announceSolveTicket(XTicket ticket, CommandSender sender, String comment) {
+        
+        String announceText = XTicketsPlugin.getInstance().lang("command-ticket-solved")
+                .replaceAll("\\$solver\\$", sender.getName())
+                .replaceAll("\\$n\\$", ""+ticket.getId())
+                .replaceAll("\\$comment\\$", comment);
+        
+        Bukkit.getOnlinePlayers()
+                .stream()
+                .filter(p -> p.hasPermission(AquamarinePermission.STAFF)
+                                || p.getUniqueId().equals(ticket.getSentByUuid()))
+                .forEach(p -> XTicketsPlugin.getInstance().sendPrefixed(announceText, p));
         
     }
     

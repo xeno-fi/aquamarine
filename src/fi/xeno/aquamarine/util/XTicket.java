@@ -6,11 +6,20 @@ import fi.xeno.aquamarine.XTicketsPlugin;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class XTicket {
     
@@ -125,19 +134,26 @@ public class XTicket {
         this.timeSolved = timeSolved;
     }
 
+
     public BaseComponent[] renderChatPreview(boolean withButtons) {
+        return renderChatPreview(withButtons, false);
+    }
+    
+    public BaseComponent[] renderChatPreview(boolean withButtons, boolean withFullText) {
 
         ComponentBuilder out = new ComponentBuilder();
         XTicketsPlugin plugin = XTicketsPlugin.getInstance();
         
         if (withButtons) {
-            out.append(XText.commandButton("§7[§e»§7] ", "§e" + XTicketsPlugin.getInstance().lang("ticket-preview-teleport"), "/xt goto " + this.getId()));
-            out.append(XText.commandButton("§7[§a✔§7] ", "§a" + XTicketsPlugin.getInstance().lang("ticket-preview-solve"), "/xt solve " + this.getId()));
+            out.append(XText.commandButton("§8[§e»§8] ", "§e" + XTicketsPlugin.getInstance().lang("ticket-preview-teleport"), "/xt goto " + this.getId()));
+            out.append(XText.commandSuggestButton("§8[§a✔§8] ", "§a" + XTicketsPlugin.getInstance().lang("ticket-preview-solve"), "/xt solve " + this.getId()));
         }
         
-        out.append(TextComponent.fromLegacyText("§b#" + this.getId() + " §f" + this.getSentByName() + " §7"));
+        out.append(TextComponent.fromLegacyText((this.isSolved ? "§a" : "§b") + "#" + this.getId() + " §f" + this.getSentByName() + " §7"));
         
-        String previewString = this.message.length() > 40 ? this.message.substring(0, 40).trim() + "..." : this.message;
+        String previewString = this.message.length() > 40 && !withFullText
+                                ? this.message.substring(0, 40).trim() + "..."
+                                : this.message;
         
         String solvedString = "";
         if (this.isSolved) {
@@ -148,16 +164,48 @@ public class XTicket {
             
         }
         
-        String hoverString = plugin.lang("ticket-hover-title").replace("%ticketId%", ""+this.id) + "\n" +
+        String hoverString = plugin.lang("ticket-hover-title").replaceAll("\\$ticketId\\$", ""+this.id) + "\n" +
                                 String.format(plugin.lang("ticket-hover-sender"), this.sentByName) + "\n" +
                                 String.format(plugin.lang("ticket-hover-timestamp"), plugin.formatTimestamp(this.timestamp)) + "\n" +
-                                String.format(plugin.lang("ticket-hover-location"), this.location.toReadable() + "\n" +
+                                String.format(plugin.lang("ticket-hover-location"), this.location.toReadable()) + "\n" +
                                 solvedString + "\n\n" +
-                                "§f§o" + XText.wordWrap(this.message, 40));
+                                "§f§o" + XText.wordWrap(this.message, 40);
         
         out.append(XText.hoverText("§7" + previewString, hoverString));
         
         return out.create();
+        
+    }
+    
+    public ItemStack renderMenuItem() {
+
+        XTicketsPlugin plugin = XTicketsPlugin.getInstance();
+
+        ItemStack item = new ItemStack(Material.PAPER);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(plugin.lang("ticket-hover-title").replaceAll("\\$ticketId\\$", ""+this.getId()));
+        
+        List<String> lore = new ArrayList<>();
+        lore.add(String.format(plugin.lang("ticket-hover-sender"), this.sentByName));
+        lore.add(String.format(plugin.lang("ticket-hover-timestamp"), plugin.formatTimestamp(this.timestamp)));
+        lore.add(String.format(plugin.lang("ticket-hover-location"), this.location.toReadable()));
+        lore.add("§r");
+        lore.addAll(Arrays.stream(XText.wordWrap(this.message, 50).split("\\n"))
+                .map(l -> "§7" + l)
+                .collect(Collectors.toList()));
+        
+        lore.add("§r");
+        lore.add("§e■□ " + plugin.lang("gui-click-teleport"));
+        lore.add("§a□■ " + plugin.lang("gui-click-solve"));
+        
+        meta.setLore(lore);
+        
+        PersistentDataContainer pd = meta.getPersistentDataContainer();
+        pd.set(XTicketsPlugin.key("xTicketId"), PersistentDataType.STRING, ""+this.getId());
+        
+        item.setItemMeta(meta);
+        return item;
         
     }
     

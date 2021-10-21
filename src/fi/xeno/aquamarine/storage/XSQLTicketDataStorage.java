@@ -4,6 +4,7 @@ import fi.xeno.aquamarine.XTicketsPlugin;
 import fi.xeno.aquamarine.sql.XHikariDatabase;
 import fi.xeno.aquamarine.util.XStoredLocation;
 import fi.xeno.aquamarine.util.XTicket;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -118,11 +119,11 @@ public class XSQLTicketDataStorage extends XTicketDataStorage {
     }
 
     @Override
-    public void solveTicket(XTicket ticket, Player solver, String comment) {
+    public void solveTicket(XTicket ticket, CommandSender solver, String comment) {
         
         // these SHOULD be unneeded, but just in case...
         ticket.setSolved(true);
-        ticket.setSolvedByUuid(solver.getUniqueId());
+        ticket.setSolvedByUuid(solver instanceof Player ? ((Player)solver).getUniqueId() : new UUID(0,0));
         ticket.setSolvedByName(solver.getName());
         ticket.setSolveComment(comment);
         ticket.setTimeSolved(System.currentTimeMillis());
@@ -137,7 +138,7 @@ public class XSQLTicketDataStorage extends XTicketDataStorage {
                                     "SET isSolved = 1, solvedByUuid = ?, solvedByName = ?, solveComment = ?, timeSolved = ? " +
                                     "WHERE ticketId = ?");
             
-            st.setString(1, solver.getUniqueId().toString());
+            st.setString(1, (solver instanceof Player ? ((Player)solver).getUniqueId() : new UUID(0,0)).toString());
             st.setString(2, solver.getName());
             
             st.setString(3, comment);
@@ -146,6 +147,7 @@ public class XSQLTicketDataStorage extends XTicketDataStorage {
             st.setInt(5, ticket.getId());
             
             st.executeUpdate();
+            announceSolveTicket(ticket, solver, comment);
             
         } catch (SQLException throwables) {
             throwables.printStackTrace();
