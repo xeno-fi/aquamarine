@@ -24,5 +24,5 @@ permissions:
     description: Permission to open new tickets
   aquamarine.staff:
     description: Permission to teleport to tickets and solve them
-version: 0.1.0
+version: 0.1.1
 main: fi.xeno.aquamarine.XTicketsPlugin
